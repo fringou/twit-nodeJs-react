@@ -26,7 +26,7 @@ const userSchema = new Schema({
     required: true,
     minLength: 12,
     maxLength: 1024,
-    select: false
+    // select: false
   }, 
   pictures: {
     type: String,
@@ -51,29 +51,16 @@ const userSchema = new Schema({
   },
 );
 
-// cryptage du password
-userSchema.pre('save', async function(next) {
+// Hashage du mot de passe avant de sauvegarder l'utilisateur
+userSchema.pre('save', async function (next) {
   const user = this;
-  if (!user.isModified('password')) {
-    return next();
+  if (user.isModified('password')) {
+    const salt = await bcrypt.genSalt();
+    user.password = await bcrypt.hash(user.password, salt);
   }
-  const salt = await bcrypt.genSalt();
-  const hash = await bcrypt.hash(user.password, salt);
-  user.password = hash;
   next();
 });
-userSchema.statics.login = async function(email, password){
-  const user = await this.findOne({email});
-  if(user){ 
-    const auth =  await bcrypt.compare(password, user.password);// Inverser les arguments de bcrypt.compare()
-    if (auth){
-      return user; // Retourner l'utilisateur au lieu de la valeur booléenne
-    }
-    throw Error('mot de passe incorrect'); // Retourner une erreur explicite si les mots de passe ne correspondent pas
-  }
-  throw Error('email incorrect'); // Retourner une erreur explicite si l'email est introuvable dans la base de données
-}
-const UserModel = mongoose.model('user', userSchema);
+
+const UserModel = mongoose.model('User', userSchema);
 
 module.exports = UserModel;
-

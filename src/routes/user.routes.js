@@ -1,23 +1,38 @@
-const router = require('express').Router();
+const express = require('express');
+const router = express.Router();
 const authController = require('../controllers/auth.controller');
 const userController = require('../controllers/user.controller');
 
-//auth
+// Routes pour la gestion des utilisateurs
+
+// Route pour la création d'un nouvel utilisateur
 router.post('/register', authController.signUp);
+
+// Route pour la connexion d'un utilisateur
 router.post('/login', authController.signIn);
-router.get('/logout', authController.logout);
 
-//user DB
-router.get('/', userController.getAllUsers);
+// Route pour la déconnexion d'un utilisateur
+router.post('/logout', authController.logout);
 
-router.get('/:id', userController.userInfo);
-router.put('/:id', userController.upDateUser);
+// Route pour récupérer les informations d'un utilisateur
+router.get('/:id', userController.getUserById);
+
+// Route pour la modification des informations d'un utilisateur
+router.put('/:id', userController.updateUser);
+
+// Route pour la suppression d'un utilisateur
 router.delete('/:id', userController.deleteUser);
 
-router.patch('/follow/:id', userController.follow);
-router.patch('/unfollow/:id', userController.unfollow);
+// Route pour suivre un utilisateur
+router.post('/:userId/follow', userController.follow);
 
-router.patch('/:id/like', userController.like);
-router.patch('/:id/unlike', userController.unlike);
+// Route pour ne plus suivre un utilisateur
+router.post('/:userId/unfollow', userController.unfollow);
+
+// Route pour liker un texte
+router.post('/:userId/like', userController.like);
+
+// Route pour unliker un texte
+router.post('/:userId/unlike', userController.unlike);
 
 module.exports = router;
