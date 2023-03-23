@@ -13,7 +13,7 @@ exports.getUserById = async (req, res) => {
   try {
     const user = await UserModel.findById(req.params.id);
     if (!user) throw Error('User not found');
-    res.status(200).json(user);
+   return res.status(200).json(user);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -22,14 +22,11 @@ exports.getUserById = async (req, res) => {
 exports.updateUser = async (req, res) => {
   const { pseudo, email, password } = req.body;
   try {
-    const user = await UserModel.findById(req.params.id);
-    if (!user) throw Error('User not found');
-
-    user.pseudo = pseudo || user.pseudo;
-    user.email = email || user.email;
-    user.password = password || user.password;
-
-    const updatedUser = await user.save();
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { _id: userId },
+      { $set: { bio: req.body.bio } },
+      { new: true, upsert: true, setDefaultsOnInsert: true },
+  );
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(404).json({ message: error.message });

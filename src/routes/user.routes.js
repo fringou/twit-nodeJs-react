@@ -12,7 +12,7 @@ router.post('/register', authController.signUp);
 router.post('/login', authController.signIn);
 
 // Route pour la déconnexion d'un utilisateur
-router.post('/logout', authController.logout);
+router.get('/logout', authController.logout);
 
 // Route pour récupérer les informations d'un utilisateur
 router.get('/:id', userController.getUserById);
